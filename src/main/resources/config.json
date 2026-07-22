@@ -1,0 +1,5 @@
+{
+  "checkUpdate": true,
+  "allowMetrics": true,
+  "$schema": "https://raw.githubusercontent.com/spartacus04/CaveIlluminator/master/config.json"
+}

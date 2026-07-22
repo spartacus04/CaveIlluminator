@@ -1,0 +1,29 @@
+name: CaveIlluminator
+version: ${version}
+author: spartacus04
+main: me.spartacus04.caveilluminator.CaveIlluminator
+api-version: 1.14
+description: Adds ways to illuminate caves and other dark areas automatically
+folia-supported: true
+
+commands:
+  caveilluminator:
+    description: Main command of the plugin
+    usage: /caveilluminator
+    aliases:
+      - caveillum
+
+permissions:
+  caveilluminator.*:
+    children:
+      - caveilluminator.reload
+      - caveilluminator.config
+  caveilluminator.reload:
+    description: Allows the player to reload the plugin
+    default: op
+  caveilluminator.config:
+    description: Allows the player to edit the config
+    default: op
+  caveilluminator.notifyupdate:
+    description: Notifies player of new update
+    default: op
