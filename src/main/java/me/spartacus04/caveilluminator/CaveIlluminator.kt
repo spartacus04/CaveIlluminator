@@ -1,5 +1,6 @@
 package me.spartacus04.caveilluminator
 
+import Config
 import me.spartacus04.colosseum.ColosseumPlugin
 import me.spartacus04.colosseum.config.FileBind
 import org.bstats.bukkit.Metrics
@@ -10,6 +11,11 @@ import org.bukkit.plugin.java.JavaPlugin
 class CaveIlluminator : ColosseumPlugin() {
     override fun onEnable() {
         INSTANCE = this
+        
+        CONFIG = run {
+            if(!dataFolder.exists()) dataFolder.mkdirs()
+            FileBind.create(Config::class.java)
+        }
 
         KEY = NamespacedKey(this, "cave_illuminator")
 
@@ -20,16 +26,16 @@ class CaveIlluminator : ColosseumPlugin() {
             this.setLanguagesToLower(true)
         }
 
-        /*if(CONFIG.ALLOW_METRICS)
+        if(CONFIG.ALLOW_METRICS)
             Metrics(this, 32812)
 
-        if(CONFIG.CHECK_UPDATE)
+        if(CONFIG.CHECK_FOR_UPDATES)
             checkForUpdates("spartacus04/CaveIlluminator") {
                 if(it != description.version) {
                     colosseumLogger.infoI18n(this, "update-available")
                     colosseumLogger.url("https://modrinth.com/plugin/cave-illuminator")
                 }
-            } */
+            }
 
         colosseumLogger.confirm("Enabled CaveIlluminator!")
     }
@@ -40,6 +46,8 @@ class CaveIlluminator : ColosseumPlugin() {
 
     companion object {
         lateinit var INSTANCE: CaveIlluminator
+        lateinit var CONFIG: Config
         lateinit var KEY: NamespacedKey
+        var VERSION = INSTANCE.serverVersion
     }
 }

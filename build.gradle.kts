@@ -32,10 +32,12 @@ repositories {
     maven { url = uri("https://repo.maven.apache.org/maven2/") }
     maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
     maven { url = uri("https://jitpack.io") }
+    maven { url = uri("https://repo.codemc.org/repository/maven-public/")}
 }
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:26.2-R0.1-SNAPSHOT")
+    compileOnly("de.tr7zw:item-nbt-api-plugin:2.15.7")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.bstats:bstats-bukkit:3.2.1")
     implementation("com.github.spartacus04:colosseum:1.2.4")

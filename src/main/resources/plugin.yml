@@ -5,6 +5,8 @@ main: me.spartacus04.caveilluminator.CaveIlluminator
 api-version: 1.14
 description: Adds ways to illuminate caves and other dark areas automatically
 folia-supported: true
+depend: [NBTAPI]
+
 
 commands:
   caveilluminator:
