@@ -1,7 +1,9 @@
+package me.spartacus04.caveilluminator.block
+
+import me.spartacus04.caveilluminator.config.fields.BlockCraftingField
 import me.spartacus04.caveilluminator.CaveIlluminator
 import me.spartacus04.caveilluminator.CaveIlluminator.Companion.INSTANCE
 import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.ShapedRecipe
 
 /**
@@ -35,7 +37,7 @@ object CraftingManager {
             }
         }
         
-        INSTANCE.server.addRecipe(recipe)
+        println(INSTANCE.server.addRecipe(recipe))
     }
     
     /**

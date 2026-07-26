@@ -1,23 +1,23 @@
 package me.spartacus04.caveilluminator
 
-import Config
+import me.spartacus04.caveilluminator.commands.MainCommand
+import me.spartacus04.caveilluminator.config.Config
+import me.spartacus04.caveilluminator.config.ConfigManager
+import me.spartacus04.caveilluminator.listeners.BlockListener
 import me.spartacus04.colosseum.ColosseumPlugin
-import me.spartacus04.colosseum.config.FileBind
+import me.spartacus04.colosseum.utils.version.MinecraftServerVersion
 import org.bstats.bukkit.Metrics
 import org.bukkit.NamespacedKey
-import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("unused")
 class CaveIlluminator : ColosseumPlugin() {
     override fun onEnable() {
         INSTANCE = this
-        
-        CONFIG = run {
-            if(!dataFolder.exists()) dataFolder.mkdirs()
-            FileBind.create(Config::class.java)
-        }
-
+        VERSION = this.serverVersion
         KEY = NamespacedKey(this, "cave_illuminator")
+        CONFIG = ConfigManager.getConfig()
+
+        ConfigManager.reloadConfig()
 
         buildI18nManager {
             loadInternalLanguageDirectory("langs")
@@ -25,6 +25,12 @@ class CaveIlluminator : ColosseumPlugin() {
             setDefaultLocale("en_us")
             this.setLanguagesToLower(true)
         }
+
+        registerCommands {
+            addCommand(MainCommand::class.java)
+        }
+
+        BlockListener(this).register()
 
         if(CONFIG.ALLOW_METRICS)
             Metrics(this, 32812)
@@ -48,6 +54,6 @@ class CaveIlluminator : ColosseumPlugin() {
         lateinit var INSTANCE: CaveIlluminator
         lateinit var CONFIG: Config
         lateinit var KEY: NamespacedKey
-        var VERSION = INSTANCE.serverVersion
+        lateinit var VERSION: MinecraftServerVersion
     }
 }

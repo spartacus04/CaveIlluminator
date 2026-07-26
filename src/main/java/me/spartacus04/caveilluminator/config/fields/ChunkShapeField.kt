@@ -1,3 +1,5 @@
+package me.spartacus04.caveilluminator.config.fields
+
 import com.google.gson.annotations.SerializedName
 
 enum class ChunkShapeField {

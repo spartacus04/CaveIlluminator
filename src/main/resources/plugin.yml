@@ -19,13 +19,18 @@ permissions:
   caveilluminator.*:
     children:
       - caveilluminator.reload
-      - caveilluminator.config
+      - caveilluminator.virtual
+      - caveilluminator.notifyupdate
+      - caveilluminator.block
   caveilluminator.reload:
     description: Allows the player to reload the plugin
     default: op
-  caveilluminator.config:
-    description: Allows the player to edit the config
+  caveilluminator.virtual:
+    description: Allows the player to use a virtual cave illuminator
     default: op
   caveilluminator.notifyupdate:
     description: Notifies player of new update
+    default: op
+  caveilluminator.block:
+    description: Allows the player to get a cave illuminator block
     default: op

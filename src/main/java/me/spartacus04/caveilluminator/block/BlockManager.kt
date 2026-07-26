@@ -1,7 +1,12 @@
+package me.spartacus04.caveilluminator.block
+
+import com.google.common.reflect.TypeToken
 import de.tr7zw.nbtapi.NBT
+import me.spartacus04.caveilluminator.CaveIlluminator.Companion.INSTANCE
 import me.spartacus04.caveilluminator.CaveIlluminator.Companion.KEY
 import me.spartacus04.caveilluminator.CaveIlluminator.Companion.VERSION
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.Skull
@@ -17,17 +22,20 @@ import java.util.UUID
  * This object provides methods to create and manage the custom block item.
  */
 object BlockManager {
-    // https://minesk.in/274232b770374f9ea741e241e112829b
-    const val TEXTURE_VALUE = "ewogICJ0aW1lc3RhbXAiIDogMTc4NTA2OTU3ODA3NSwKICAicHJvZmlsZUlkIiA6ICI4NzA1MzkxMDBlOGQ0MzU2YjJiYjlmZGI1NjFhOGU3ZSIsCiAgInByb2ZpbGVOYW1lIiA6ICJfcmVncmV0dHQiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDg5M2Q4MDgxZjQzMGUyZTIzZDNhNjQ2MmNjYzQ4YjEyN2VjZjNmNjNkOGJkYWE2MGU0OGE2Yzc5NmRkMjU2NiIKICAgIH0KICB9Cn0="
+    // https://minesk.in/0e1403bf558447c5a20024510aee23a8
+    const val TEXTURE_VALUE = "ewogICJ0aW1lc3RhbXAiIDogMTc4NTA4NTgwMjA0NiwKICAicHJvZmlsZUlkIiA6ICI3MWU4ODU5ODVkOGM0ZDg2ODMxODYxNDU1NjE3MDY2YyIsCiAgInByb2ZpbGVOYW1lIiA6ICJKb3NoeV9XYXNoeSIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9mYTMxOWZhMWU4YzhkNmFjMTE0ZjMyYzgxMjA1Yzg0YjNkMzQyOTNlN2VlN2RiNGExZDM0ZmU1N2YwMTJiZGU2IiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0="
     val TEXTURE_URL : URL =
-        URI("https://textures.minecraft.net/texture/d893d8081f430e2e23d3a6462ccc48b127ecf3f63d8bdaa60e48a6c796dd2566").toURL()
-    
+        URI("https://textures.minecraft.net/texture/fa319fa1e8c8d6ac114f32c81205c84b3d34293e7ee7db4a1d34fe57f012bde6").toURL()
+
+    val illuminatorsFile = INSTANCE.dataFolder.resolve("saved.json")
+    var illuminatorLocations = hashMapOf<Location, HashMap<Location, Material>>()
+
     private fun buildItemStack(): ItemStack {
         val stack = ItemStack(Material.PLAYER_HEAD)
         
         if(VERSION >= "1.18.1") {
             // Use spigot API
-            val profile = Bukkit.createPlayerProfile(UUID.randomUUID(), "CaveIlluminatorBlock")
+            val profile = Bukkit.createPlayerProfile(UUID.randomUUID(), "")
             
             @Suppress("UsePropertyAccessSyntax")
             profile.setTextures(profile.textures.apply {
@@ -68,7 +76,7 @@ object BlockManager {
         return stack
     }
     
-    private val item : ItemStack by lazy { buildItemStack() }
+    private val caveIlluminatorItem : ItemStack by lazy { buildItemStack() }
     
     /**
      * Creates an ItemStack representing the custom Cave Illuminator block.
@@ -77,22 +85,9 @@ object BlockManager {
      * @return An ItemStack of the custom Cave Illuminator block.
      */
     fun getItem(): ItemStack {
-        return item.clone()
+        return caveIlluminatorItem.clone()
     }
-    
-    /**
-     * Marks the given block as a Cave Illuminator block by setting a persistent data key on it. This allows the plugin to identify the block later.
-     */
-    fun markAsCaveIlluminatorBlock(block: Block) {
-        val skull = block.state as? Skull ?: return
-        
-        skull.persistentDataContainer.set(
-            KEY,
-            PersistentDataType.BOOLEAN,
-            true
-        )
-    }
-    
+
     /**
      * Checks if the given ItemStack is a Cave Illuminator itemstack.
      * 
@@ -121,5 +116,40 @@ object BlockManager {
             KEY,
             PersistentDataType.BOOLEAN
         )
+    }
+
+    fun placeBlock(block: Block) {
+        illuminatorLocations[block.location] = hashMapOf()
+        save()
+    }
+
+    fun destroyBlock(block: Block) {
+        val removed = illuminatorLocations.remove(block.location)
+
+        // TODO: handle destruction of built blocks
+
+        save()
+    }
+
+    fun load() {
+        // save file
+        if(!INSTANCE.dataFolder.exists()) {
+            INSTANCE.dataFolder.mkdirs()
+        }
+
+        if(!illuminatorsFile.exists()) return
+
+        val text = illuminatorsFile.bufferedReader().readText()
+
+        illuminatorLocations = INSTANCE.gson.fromJson(text, object : TypeToken<HashMap<Location, HashMap<Location, Block>>>() {}.type) ?: hashMapOf()
+    }
+
+    fun save() {
+        // TODO: Write a custom type adapter for location
+        val text = INSTANCE.gson.toJson(illuminatorLocations)
+
+        illuminatorsFile.bufferedWriter().use { writer ->
+            writer.write(text)
+        }
     }
 }

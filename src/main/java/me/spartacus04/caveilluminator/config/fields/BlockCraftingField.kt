@@ -1,3 +1,5 @@
+package me.spartacus04.caveilluminator.config.fields
+
 import me.spartacus04.colosseum.config.ConfigField
 import org.bukkit.Material
 
@@ -8,14 +10,14 @@ data class BlockCraftingField(
         "The shape of the crafting recipe. Use a 3x3 grid of characters to represent the recipe.",
         "[]"
     )
-    var SHAPE: List<List<Char>> = listOf(listOf(' ', ' ', ' '), listOf(' ', ' ', ' '), listOf(' ', ' ', ' ')),
+    var SHAPE: List<List<Char>> = listOf(),
     
     @ConfigField(
         "ingredients",
         "The ingredients of the crafting recipe. Use a map of characters to material names to represent the ingredients.",
         "{}"
     )    
-    var INGREDIENTS: Map<Char, String> = mapOf(' ' to "minecraft:air")
+    var INGREDIENTS: Map<Char, String> = mapOf()
 ) {
     init {
         if (SHAPE.size != 3 || SHAPE.any { it.size != 3 }) {
