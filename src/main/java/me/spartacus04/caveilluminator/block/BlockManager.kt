@@ -1,6 +1,6 @@
 package me.spartacus04.caveilluminator.block
 
-import com.google.common.reflect.TypeToken
+import com.google.gson.reflect.TypeToken
 import de.tr7zw.nbtapi.NBT
 import me.spartacus04.caveilluminator.CaveIlluminator.Companion.INSTANCE
 import me.spartacus04.caveilluminator.CaveIlluminator.Companion.KEY
@@ -23,19 +23,21 @@ import java.util.UUID
  */
 object BlockManager {
     // https://minesk.in/0e1403bf558447c5a20024510aee23a8
-    const val TEXTURE_VALUE = "ewogICJ0aW1lc3RhbXAiIDogMTc4NTA4NTgwMjA0NiwKICAicHJvZmlsZUlkIiA6ICI3MWU4ODU5ODVkOGM0ZDg2ODMxODYxNDU1NjE3MDY2YyIsCiAgInByb2ZpbGVOYW1lIiA6ICJKb3NoeV9XYXNoeSIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9mYTMxOWZhMWU4YzhkNmFjMTE0ZjMyYzgxMjA1Yzg0YjNkMzQyOTNlN2VlN2RiNGExZDM0ZmU1N2YwMTJiZGU2IiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0="
-    val TEXTURE_URL : URL =
+    private const val TEXTURE_VALUE = "ewogICJ0aW1lc3RhbXAiIDogMTc4NTA4NTgwMjA0NiwKICAicHJvZmlsZUlkIiA6ICI3MWU4ODU5ODVkOGM0ZDg2ODMxODYxNDU1NjE3MDY2YyIsCiAgInByb2ZpbGVOYW1lIiA6ICJKb3NoeV9XYXNoeSIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9mYTMxOWZhMWU4YzhkNmFjMTE0ZjMyYzgxMjA1Yzg0YjNkMzQyOTNlN2VlN2RiNGExZDM0ZmU1N2YwMTJiZGU2IiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0="
+    private val TEXTURE_URL : URL =
         URI("https://textures.minecraft.net/texture/fa319fa1e8c8d6ac114f32c81205c84b3d34293e7ee7db4a1d34fe57f012bde6").toURL()
+    private val ILLUMINATOR_PROFILE_UUID = UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479")
 
     val illuminatorsFile = INSTANCE.dataFolder.resolve("saved.json")
     var illuminatorLocations = hashMapOf<Location, HashMap<Location, Material>>()
+    val illuminatorTypeToken = object : TypeToken<Map<Location, Map<Location, Material>>>() {}.type
 
     private fun buildItemStack(): ItemStack {
         val stack = ItemStack(Material.PLAYER_HEAD)
         
         if(VERSION >= "1.18.1") {
             // Use spigot API
-            val profile = Bukkit.createPlayerProfile(UUID.randomUUID(), "")
+            val profile = Bukkit.createPlayerProfile(ILLUMINATOR_PROFILE_UUID, "")
             
             @Suppress("UsePropertyAccessSyntax")
             profile.setTextures(profile.textures.apply {
@@ -49,7 +51,7 @@ object BlockManager {
             NBT.modify(stack) {
                 val skullOwnerCompound = it.getOrCreateCompound("SkullOwner")
                 
-                skullOwnerCompound.setUUID("Id", UUID.randomUUID())
+                skullOwnerCompound.setUUID("Id", ILLUMINATOR_PROFILE_UUID)
                 
                 skullOwnerCompound
                     .getOrCreateCompound("Properties")
@@ -111,7 +113,7 @@ object BlockManager {
      */
     fun isCaveIlluminator(block: Block): Boolean {
         val skull = block.state as? Skull ?: return false
-        
+
         return skull.persistentDataContainer.has(
             KEY,
             PersistentDataType.BOOLEAN
@@ -126,7 +128,7 @@ object BlockManager {
     fun destroyBlock(block: Block) {
         val removed = illuminatorLocations.remove(block.location)
 
-        // TODO: handle destruction of built blocks
+        // TODO: handle destruction of built blocks by either reclaiming or not
 
         save()
     }
@@ -141,12 +143,11 @@ object BlockManager {
 
         val text = illuminatorsFile.bufferedReader().readText()
 
-        illuminatorLocations = INSTANCE.gson.fromJson(text, object : TypeToken<HashMap<Location, HashMap<Location, Block>>>() {}.type) ?: hashMapOf()
+        illuminatorLocations = INSTANCE.gson.fromJson(text, illuminatorTypeToken)
     }
 
     fun save() {
-        // TODO: Write a custom type adapter for location
-        val text = INSTANCE.gson.toJson(illuminatorLocations)
+        val text = INSTANCE.gson.toJson(illuminatorLocations, illuminatorTypeToken)
 
         illuminatorsFile.bufferedWriter().use { writer ->
             writer.write(text)

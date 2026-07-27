@@ -1,5 +1,9 @@
 package me.spartacus04.caveilluminator
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import me.spartacus04.caveilluminator.block.IlluminatorTypeAdapter
 import me.spartacus04.caveilluminator.commands.MainCommand
 import me.spartacus04.caveilluminator.config.Config
 import me.spartacus04.caveilluminator.config.ConfigManager
@@ -7,15 +11,27 @@ import me.spartacus04.caveilluminator.listeners.BlockListener
 import me.spartacus04.colosseum.ColosseumPlugin
 import me.spartacus04.colosseum.utils.version.MinecraftServerVersion
 import org.bstats.bukkit.Metrics
+import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.NamespacedKey
 
 @Suppress("unused")
 class CaveIlluminator : ColosseumPlugin() {
+    override fun buildGson(block: GsonBuilder.() -> Unit): Gson {
+        return super.buildGson {
+            registerTypeAdapter(
+                object : TypeToken<Map<Location, Map<Location, Material>>>() {}.type,
+                IlluminatorTypeAdapter()
+            )
+            block()
+        }
+    }
+
     override fun onEnable() {
         INSTANCE = this
         VERSION = this.serverVersion
         KEY = NamespacedKey(this, "cave_illuminator")
-        CONFIG = ConfigManager.getConfig()
+        CONFIG = ConfigManager.getFirstTimeConfig()
 
         ConfigManager.reloadConfig()
 

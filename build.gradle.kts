@@ -40,7 +40,7 @@ dependencies {
     compileOnly("de.tr7zw:item-nbt-api-plugin:2.15.7")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.bstats:bstats-bukkit:3.2.1")
-    implementation("com.github.spartacus04:colosseum:1.2.4")
+    implementation("me.spartacus04.colosseum:colosseum:dev")
 }
 
 group = "me.spartacus04.CaveIlluminator"

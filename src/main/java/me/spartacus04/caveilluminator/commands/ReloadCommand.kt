@@ -1,6 +1,5 @@
 package me.spartacus04.caveilluminator.commands
 
-import me.spartacus04.caveilluminator.CaveIlluminator.Companion.CONFIG
 import me.spartacus04.caveilluminator.config.ConfigManager
 import me.spartacus04.colosseum.ColosseumPlugin
 import me.spartacus04.colosseum.commandHandling.command.ColosseumCommand
