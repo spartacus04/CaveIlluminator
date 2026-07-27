@@ -1,7 +1,6 @@
 package me.spartacus04.caveilluminator.config.fields
 
 import me.spartacus04.colosseum.config.ConfigField
-import org.bukkit.Material
 
 @Suppress("PropertyName")
 data class BlockCraftingField(

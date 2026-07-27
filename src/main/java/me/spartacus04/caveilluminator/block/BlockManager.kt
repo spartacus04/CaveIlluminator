@@ -13,6 +13,7 @@ import org.bukkit.block.Skull
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.persistence.PersistentDataType
+import java.lang.reflect.Type
 import java.net.URI
 import java.net.URL
 import java.util.UUID
@@ -30,7 +31,8 @@ object BlockManager {
 
     val illuminatorsFile = INSTANCE.dataFolder.resolve("saved.json")
     var illuminatorLocations = hashMapOf<Location, HashMap<Location, Material>>()
-    val illuminatorTypeToken = object : TypeToken<Map<Location, Map<Location, Material>>>() {}.type
+    val illuminatorTypeToken: Type = object : TypeToken<Map<Location, Map<Location, Material>>>() {}.type
+    private val particleManager = ParticleManager(INSTANCE)
 
     private fun buildItemStack(): ItemStack {
         val stack = ItemStack(Material.PLAYER_HEAD)
@@ -79,7 +81,6 @@ object BlockManager {
     }
     
     private val caveIlluminatorItem : ItemStack by lazy { buildItemStack() }
-    
     /**
      * Creates an ItemStack representing the custom Cave Illuminator block.
      * The block is represented as a player head with a custom texture.
@@ -122,11 +123,13 @@ object BlockManager {
 
     fun placeBlock(block: Block) {
         illuminatorLocations[block.location] = hashMapOf()
+        particleManager.startParticles(block)
         save()
     }
 
     fun destroyBlock(block: Block) {
         val removed = illuminatorLocations.remove(block.location)
+        particleManager.stopParticles(block.location)
 
         // TODO: handle destruction of built blocks by either reclaiming or not
 
@@ -144,6 +147,10 @@ object BlockManager {
         val text = illuminatorsFile.bufferedReader().readText()
 
         illuminatorLocations = INSTANCE.gson.fromJson(text, illuminatorTypeToken)
+
+        illuminatorLocations.keys.forEach {
+            particleManager.startParticles(it.block)
+        }
     }
 
     fun save() {

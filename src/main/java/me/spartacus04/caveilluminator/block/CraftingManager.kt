@@ -37,7 +37,7 @@ object CraftingManager {
             }
         }
 
-        println(INSTANCE.server.addRecipe(recipe))
+        INSTANCE.server.addRecipe(recipe)
     }
 
     /**

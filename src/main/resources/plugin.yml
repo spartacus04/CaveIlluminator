@@ -22,6 +22,7 @@ permissions:
       - caveilluminator.virtual
       - caveilluminator.notifyupdate
       - caveilluminator.block
+      - caveilluminator.bypass
   caveilluminator.reload:
     description: Allows the player to reload the plugin
     default: op
@@ -33,4 +34,7 @@ permissions:
     default: op
   caveilluminator.block:
     description: Allows the player to get a cave illuminator block
+    default: op
+  caveilluminator.bypass:
+    description: Allows the player to bypass the cave illuminator block requirement
     default: op

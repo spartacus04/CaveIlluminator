@@ -24,18 +24,14 @@ object ConfigManager {
      */
     fun reloadConfig() {
         CONFIG.read()
-        println("CONFIG.CUSTOM_BLOCK_CRAFTING size: ${CONFIG.CUSTOM_BLOCK_CRAFTING.size}")
 
         BlockManager.load()
         CraftingManager.removeAllRecipes()
 
         CONFIG.CUSTOM_BLOCK_CRAFTING.forEach {
-            println("Attempting recipe: shape=${it.SHAPE} ingredients=${it.INGREDIENTS}")
             try {
                 CraftingManager.addRecipe(it)
-                println("Recipe added successfully")
             } catch (e: IllegalArgumentException) {
-                println("FAILED: ${e.message}")
                 INSTANCE.colosseumLogger.error("Failed to add crafting recipe for Cave Illuminator: ${e.message}")
             }
         }

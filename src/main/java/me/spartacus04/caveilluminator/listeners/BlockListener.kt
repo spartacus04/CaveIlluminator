@@ -4,7 +4,6 @@ import me.spartacus04.caveilluminator.CaveIlluminator.Companion.KEY
 import me.spartacus04.caveilluminator.block.BlockManager
 import me.spartacus04.colosseum.ColosseumPlugin
 import me.spartacus04.colosseum.listeners.ColosseumListener
-import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Skull
 import org.bukkit.block.data.Rotatable
@@ -13,7 +12,6 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.persistence.PersistentDataType
 
 @Suppress("unused")

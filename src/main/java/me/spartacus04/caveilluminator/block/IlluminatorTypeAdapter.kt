@@ -79,9 +79,6 @@ class IlluminatorTypeAdapter : TypeAdapter<Map<Location, Map<Location, Material>
         val z = parts[3].toInt()
 
         val world = Bukkit.getWorld(worldName)
-
-        // Using block coords + 0.5 offset is optional; here we keep it as
-        // exact block coordinates since that's what was serialized.
         return Location(world, x.toDouble(), y.toDouble(), z.toDouble())
     }
 }
